@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  typesense:
+    image: typesense/typesense:27.1
+    container_name: typesense_without_proxy
+    restart: on-failure
+    ports:
+      - "8108:8108"
+    volumes:
+      - ./typesense-data:/data
+    command: "--data-dir /data --api-key=typesense@123 --enable-cors"

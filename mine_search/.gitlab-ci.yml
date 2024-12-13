@@ -1,0 +1,88 @@
+variables:
+  GIT_STRATEGY: none
+  GIT_CHECKOUT: "false"
+
+stages:
+  - build
+  - code-analysis
+  - image-scan
+  - deploy
+
+dev-build:
+  stage: build
+  tags:
+    - devenv
+  only:
+    - dev
+  script:
+    - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -o 0 -e STAGE="build" -e DOCKER_TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA -t dev 6784
+dev-code-analysis:
+  stage: code-analysis
+  tags:
+    - devenv
+  only:
+    - dev
+  script:
+    - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -o 1 -e STAGE="code-analysis" -e DOCKER_TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA -t dev 6784
+dev-deploy:
+  stage: deploy
+  tags:
+    - devenv
+  only:
+    - dev
+  script:
+    - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -e STAGE="deploy" -e DOCKER_TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA -t dev 6784
+
+stag-build:
+  stage: build
+  tags:
+    - devenv
+  only:
+    - staging
+  script:
+    - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -o 0 -e STAGE="build" -e DOCKER_TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA -t staging 6784
+
+# stag-code-analysis:
+#   stage: code-analysis
+#   tags:
+#     - devenv
+#   only:
+#     - staging
+#   script:
+#     - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -o 1 -e STAGE="code-analysis" -e DOCKER_TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA -t staging 6784
+
+# image-scan:
+#   stage: image-scan
+#   tags:
+#     - devenv
+#   only:
+#     - staging
+#   script:
+#     - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -o 1 -e STAGE="image-scan" -e DOCKER_TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA -t staging 6784
+
+stag-deploy:
+  stage: deploy
+  tags:
+    - devenv
+  only:
+    - staging
+  script:
+    - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -e STAGE="deploy" -e DOCKER_TAG=$CI_COMMIT_REF_NAME-$CI_COMMIT_SHORT_SHA -t staging 6784
+
+prod-build:
+  stage: build
+  tags:
+    - devenv
+  only:
+    - tags
+  script:
+    - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -o 0 -e STAGE="build" -e DOCKER_TAG=$CI_COMMIT_TAG -t main 6784
+prod-deploy:
+  stage: deploy
+  tags:
+    - devenv
+  script:
+    - trigger -h http://git.fpt.net -u /api/v4/projects -a $CI_BOT_ACCESS_TOKEN_NEW -p glptt-ab24617a26013b9004cd10b45e748b138b930aba  -e STAGE="deploy" -e DOCKER_TAG=$CI_COMMIT_TAG -t main 6784
+  only:
+    refs:
+      - tags
